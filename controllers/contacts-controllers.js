@@ -2,34 +2,43 @@ import { ctrlWrapper } from "../decorators/index.js";
 import Contacts from "../models/contacts.js";
 
 const getAll = async (req, res) => {
-const contactList = await Contacts.find();
+  const { _id: owner } = req.user;
+
+  const contactList = await Contacts.find(owner);
+  
    res.json(contactList)
 }
 const getById = async (req, res) => {
-    const { contactId } = req.params;
-  const oneContact = await Contacts.findById(contactId);
+ 
+  const { contactId } = req.params;
+   const { _id: owner } = req.user;
+  const oneContact = await Contacts.findById({_id:contactId,owner});
     if (!oneContact) {
      return res.status(404).json({ messege : "Not found"})
   }
      res.json(oneContact)
 }
- const add = async (req, res) => {
-    const newContact = await Contacts.create(req.body);
+const add = async (req, res) => {
+  const { _id: owner } = req.user;
+    const newContact = await Contacts.create({...req.body,owner});
     res.status(201).json(newContact)
 }
 
 const updateById = async (req, res) => {
-    const { contactId } = req.params;
-    const resalt = await Contacts.findByIdAndUpdate(contactId, req.body, {new: true});
+ 
+  const { contactId } = req.params;
+   const { _id: owner } = req.user;
+    const resalt = await Contacts.findOneAndUpdate({_id: contactId,owner}, req.body);
     if (!resalt) {
       return res.status(404).json({ messege : "Not found"})
     }
     res.json(resalt)
 }
  
-const updateFavorite =  async (req, res) => { 
-    const { contactId } = req.params;
-    const result = await Contacts.findByIdAndUpdate(contactId, req.body);
+const updateFavorite = async (req, res) => { 
+  const { contactId } = req.params;
+  const { _id: owner } = req.user;
+    const result = await Contacts.findOneAndUpdate({_id: contactId,owner}, req.body);
     if (!result) {
       return res.status(404).json({ messege : " Not found "})
     }
@@ -37,8 +46,8 @@ const updateFavorite =  async (req, res) => {
 }
 
 const deleteById = async (req, res) => {
-    const { contactId } = req.params;
-    const resalt = await Contacts.findByIdAndDelete(contactId);
+  const { contactId } = req.params;
+    const resalt = await Contacts.findOneAndDelete({_id: contactId});
     if (!resalt) {
       return res.status(404).json({ messege : "Not found"})
     }

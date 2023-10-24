@@ -1,8 +1,7 @@
 import express from "express";
 import { contactAddSchema ,contactFavoriteSchema} from "../../models/contacts.js";
 import contactsControllers from "../../controllers/contacts-controllers.js";
-import isEmptyBody from "../../middlwares/isEmptyBody.js";
-import isValidId from "../../middlwares/isValidId.js";
+import {authenticate,isValidId,isEmptyBody} from '../../middlwares/index.js'
 import validateBody from "../../decorators/validateBody.js";
 
 const contactAddValidate = validateBody(contactAddSchema)
@@ -10,6 +9,8 @@ const contactFavoriteAddValidate = validateBody(contactFavoriteSchema)
 
 
 const router = express.Router();
+
+router.use(authenticate)
 
 router.get('/',contactsControllers.getAll )
 
