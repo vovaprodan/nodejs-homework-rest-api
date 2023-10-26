@@ -16,8 +16,10 @@ const singup = async (req, res) => {
 
     const newUser = await Users.create({...req.body,  password: hashPassword});
     res.status(201).json({
-        email: newUser.email,
-         subscription: newUser.subscription
+        user: {
+            email: newUser.email,
+            subscription: newUser.subscription
+        }
     })
 }
 
@@ -43,6 +45,10 @@ const singin = async (req, res) => {
 
     res.json({
         token,
+         user: {
+            email: user.email,
+            subscription: user.subscription
+        }
     })
 }
 

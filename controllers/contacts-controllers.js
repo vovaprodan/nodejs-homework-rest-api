@@ -4,7 +4,7 @@ import Contacts from "../models/contacts.js";
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
 
-  const contactList = await Contacts.find(owner);
+  const contactList = await Contacts.find({owner});
   
    res.json(contactList)
 }
@@ -20,7 +20,8 @@ const getById = async (req, res) => {
 }
 const add = async (req, res) => {
   const { _id: owner } = req.user;
-    const newContact = await Contacts.create({...req.body,owner});
+  const newContact = await Contacts.create({ ...req.body, owner });
+  console.log(newContact)
     res.status(201).json(newContact)
 }
 
