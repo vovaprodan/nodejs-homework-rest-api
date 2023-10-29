@@ -81,11 +81,12 @@ const logout = async (req, res) => {
 
 const updateAvatar = async (req, res) => {
 
-    const { _id: owner,name} = req.user;
+    const { _id: owner} = req.user;
     const { path: oldPath, filename } = req.file;
-    
-  const newPath = path.join(avatarPath,filename)
-  await fs.rename(oldPath,newPath)
+    const newPath = path.join(avatarPath,filename)
+    const avatar = await Jimp.read(oldPath);
+    avatar.resize(250, 250).write(oldPath);
+    await fs.rename(oldPath,newPath)
     const avatarUrl = path.join('avatars', filename);
 
     const result = await Users.findOneAndUpdate({...req.body ,avatarUrl, owner});
@@ -102,6 +103,6 @@ export default {
     singin: ctrlWrapper(singin),
     getCurrent: ctrlWrapper(getCurrent),
     logout : ctrlWrapper(logout),
-    updateAvatar : ctrlWrapper(updateAvatar)
+    updateAvatar : ctrlWrapper(updateAvatar),
 
 }
