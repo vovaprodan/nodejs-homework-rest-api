@@ -1,6 +1,7 @@
 import { ctrlWrapper } from "../decorators/index.js";
 import Contacts from "../models/contacts.js";
 
+
 const getAll = async (req, res) => {
   const { _id: owner } = req.user;
 
@@ -19,9 +20,12 @@ const getById = async (req, res) => {
      res.json(oneContact)
 }
 const add = async (req, res) => {
-  const { _id: owner } = req.user;
+  const { _id: owner, email } = req.user;
+  // const { path: oldPath, filename } = req.file;
+  // const newPath = path.join(avatarPath,filename)
+  // await fs.rename(oldPath,newPath)
+  // const avatar = path.join('avatars',filename)
   const newContact = await Contacts.create({ ...req.body, owner });
-  console.log(newContact)
     res.status(201).json(newContact)
 }
 

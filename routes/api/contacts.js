@@ -1,7 +1,7 @@
 import express from "express";
 import { contactAddSchema ,contactFavoriteSchema} from "../../models/contacts.js";
 import contactsControllers from "../../controllers/contacts-controllers.js";
-import {authenticate,isValidId,isEmptyBody} from '../../middlwares/index.js'
+import {authenticate,isValidId,isEmptyBody,} from '../../middlwares/index.js'
 import validateBody from "../../decorators/validateBody.js";
 
 const contactAddValidate = validateBody(contactAddSchema)

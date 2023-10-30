@@ -17,6 +17,9 @@ const userSchema = new Schema({
     required: [true, 'Email is required'],
     unique: true,
   },
+  avatarUrl: {
+      type: String,
+    },
   subscription: {
     type: String,
     enum: ["starter", "pro", "business"],
@@ -32,8 +35,12 @@ userSchema.pre("findOneAndUpdate", runValidatorsAtUpdate);
 userSchema.post("findOneAndUpdate", handleSaveError);
 
 export const userSignupSchema = Joi.object({
-    email: Joi.string().pattern(emailRegexp).required(),
-    password: Joi.string().min(6).required(),
+  email: Joi.string().pattern(emailRegexp).required(),
+  password: Joi.string().min(6).required(),
+});
+
+export const userAvatarSchema = Joi.object({
+    avatarUrl: Joi.string(),
 })
 
 

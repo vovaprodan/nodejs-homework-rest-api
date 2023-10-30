@@ -2,6 +2,13 @@ import { ctrlWrapper } from "../decorators/index.js";
 import Users from "../models/Users.js";
 import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import gravatar from 'gravatar';
+import fs from 'fs/promises';
+import path from "path";
+import Jimp from "jimp";
+
+const avatarPath = path.resolve('public', 'avatars');
+
 
 const {JWT_SECRET} = process.env
 
@@ -12,12 +19,14 @@ const singup = async (req, res) => {
         return res.status(409).json({ messege : "Email in use"})
       
     }
-    const hashPassword = await bcryptjs.hash(password,10)
+    const hashPassword = await bcryptjs.hash(password, 10);
+    const avatarUrl = gravatar.url(email, { protocol: 'http'});
 
-    const newUser = await Users.create({...req.body,  password: hashPassword});
+    const newUser = await Users.create({...req.body, password: hashPassword,avatarUrl});
     res.status(201).json({
         user: {
             email: newUser.email,
+            avatarUrl: newUser.avatarUrl,
             subscription: newUser.subscription
         }
     })
@@ -70,10 +79,30 @@ const logout = async (req, res) => {
     })
 }
 
+const updateAvatar = async (req, res) => {
+
+    const { _id: owner} = req.user;
+    const { path: oldPath, filename } = req.file;
+    const newPath = path.join(avatarPath,filename)
+    const avatar = await Jimp.read(oldPath);
+    avatar.resize(250, 250).write(oldPath);
+    await fs.rename(oldPath,newPath)
+    const avatarUrl = path.join('avatars', filename);
+
+    const result = await Users.findOneAndUpdate({...req.body ,avatarUrl, owner});
+    if (!result) {
+      return res.status(401).json({ messege : "Not authorized"})
+    }
+    res.status(200).json({
+        avatarUrl: result.avatarUrl
+    });
+}
+
 export default {
     singup: ctrlWrapper(singup),
     singin: ctrlWrapper(singin),
     getCurrent: ctrlWrapper(getCurrent),
-    logout : ctrlWrapper(logout)
+    logout : ctrlWrapper(logout),
+    updateAvatar : ctrlWrapper(updateAvatar),
 
 }
