@@ -25,7 +25,17 @@ const userSchema = new Schema({
     enum: ["starter", "pro", "business"],
     default: "starter"
   },
-  token: String
+  token: {
+      type: String,
+    },
+  verify: {
+    type: Boolean,
+    default: false,
+  },
+  verificationToken: {
+    type: String,
+    required: [true, 'Verify token is required'],
+  },
 
 }, {versionKey: false, timestamps: true})
 
@@ -41,6 +51,9 @@ export const userSignupSchema = Joi.object({
 
 export const userAvatarSchema = Joi.object({
     avatarUrl: Joi.string(),
+})
+export const userEmailSchema = Joi.object({
+   email: Joi.string().pattern(emailRegexp).required(),
 })
 
 
